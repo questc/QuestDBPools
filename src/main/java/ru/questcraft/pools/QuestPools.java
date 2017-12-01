@@ -28,4 +28,11 @@ public interface QuestPools {
      * @return БД.
      */
     Datastore getDatastore(@NonNull Morphia morphia, String key);
+
+    /**
+     * Выполнение асинхронной операции.
+     *
+     * @param runnable - операция
+     */
+    void asyncOperation(@NonNull Runnable runnable);
 }
