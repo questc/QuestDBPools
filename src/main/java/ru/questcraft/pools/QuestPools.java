@@ -3,6 +3,7 @@ package ru.questcraft.pools;
 import lombok.NonNull;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
+import org.mongodb.morphia.dao.DAO;
 
 /**
  * Основной класс для работы с пулом баз данных.
@@ -20,14 +21,13 @@ public interface QuestPools {
     Morphia defaultMorphia();
 
     /**
-     * Получение доступа к определенной базе данных по ключу.
-     * Если база данных публичная, то ключ не потребуется.
+     * Получение доступа к определенной базе данных.
      *
      * @param morphia - инстанс морфии
-     * @param key     - ключ, может быть null.
+     * @param dbName  - имя БД.
      * @return БД.
      */
-    Datastore getDatastore(@NonNull Morphia morphia, String key);
+    Datastore getDatastore(@NonNull Morphia morphia, String dbName);
 
     /**
      * Выполнение асинхронной операции.
@@ -35,4 +35,15 @@ public interface QuestPools {
      * @param runnable - операция
      */
     void asyncOperation(@NonNull Runnable runnable);
+
+
+    /**
+     * Создает контейнер, содержащий объекты типа дженерика.
+     *
+     * @param datastore   - БД.
+     * @param objectClass - тип объекта.
+     * @param idClass     - тип идентификатора объекта.
+     * @return контейнер (DAO).
+     */
+    <T, K> DAO<T, K> asDao(@NonNull Datastore datastore, Class<T> objectClass, Class<K> idClass);
 }
