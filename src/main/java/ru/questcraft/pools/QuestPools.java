@@ -3,7 +3,6 @@ package ru.questcraft.pools;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
-import java.util.Iterator;
 import java.util.ServiceLoader;
 
 /**
@@ -11,14 +10,22 @@ import java.util.ServiceLoader;
  *
  * @author CatCoder
  */
-public interface QuestPools {
+public abstract class QuestPools {
+
+    private static QuestPools instance;
+
+    public static QuestPools instance() {
+        if (instance == null) instance = ServiceLoader.load(QuestPools.class).iterator().next();
+
+        return instance;
+    }
 
     /**
      * Получение пула баз данных Redis.
      *
      * @return пул Redis.
      */
-    JedisPool jedisPool();
+    public abstract JedisPool jedisPool();
 
     /**
      * Авторизация экзмепляра класса {@link Jedis} для работы с запросами.
@@ -26,14 +33,14 @@ public interface QuestPools {
      * @param jedis - инстанс Jedis
      * @return авторизованный Jedis.
      */
-    Jedis authenticate(Jedis jedis);
+    public abstract Jedis authenticate(Jedis jedis);
 
     /**
      * Возвращает дефолтный конектор MySQL.
      *
      * @return конектор.
      */
-    SqlConnector defaultSqlConnector();
+    public abstract SqlConnector defaultSqlConnector();
 
     /**
      * Возвращает специфический конектор для определенной БД.
@@ -42,17 +49,5 @@ public interface QuestPools {
      * @return конектор.
      * @throws java.util.NoSuchElementException если конектор для такой БД не найден.
      */
-    SqlConnector sqlConnector(String database);
-
-    /**
-     * Используя темную магию SPI достаем реализацию {@link QuestPools}
-     * @return реализацию, если она найдена, иначе {@link IllegalStateException}
-     */
-    static QuestPools instance(){
-        Iterator<QuestPools> iterator = ServiceLoader.load(QuestPools.class).iterator();
-
-        if(!iterator.hasNext()) throw new IllegalStateException("QPools implementations not found.");
-
-        return iterator.next();
-    }
+    public abstract SqlConnector sqlConnector(String database);
 }

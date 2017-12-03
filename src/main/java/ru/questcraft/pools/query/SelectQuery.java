@@ -18,7 +18,7 @@ public class SelectQuery extends AbstractQuery {
     private final Object[] objects;
 
     @Override
-    ResultSet execute(Connection connection) throws SQLException {
+    public ResultSet execute(Connection connection) throws SQLException {
         try (PreparedStatement ps = fillObjects(connection.prepareStatement(query), objects)) {
             return ps.executeQuery();
         }
