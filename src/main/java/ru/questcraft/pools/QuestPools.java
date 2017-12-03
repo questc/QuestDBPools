@@ -1,49 +1,31 @@
 package ru.questcraft.pools;
 
-import lombok.NonNull;
-import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.Morphia;
-import org.mongodb.morphia.dao.DAO;
+import redis.clients.jedis.JedisPool;
 
 /**
- * Основной класс для работы с пулом баз данных.
+ * Основной класс для работы с пулом баз данных MySQL и Redis
  *
  * @author CatCoder
  */
 public interface QuestPools {
 
     /**
-     * Создание стандартного экземпляра {@link Morphia}
-     * со стандартным маппингом объектов.
-     *
-     * @return стандартный экземпляр.
+     * Получение пула баз данных Redis.
+     * @return пул Redis.
      */
-    Morphia defaultMorphia();
+    JedisPool jedisPool();
 
     /**
-     * Получение доступа к определенной базе данных.
-     *
-     * @param morphia - инстанс морфии
-     * @param dbName  - имя БД.
-     * @return БД.
+     * Возвращает дефолтный конектор MySQL.
+     * @return конектор.
      */
-    Datastore getDatastore(@NonNull Morphia morphia, String dbName);
+    SqlConnector defaultSqlConnector();
 
     /**
-     * Выполнение асинхронной операции.
-     *
-     * @param runnable - операция
+     * Возвращает специфический конектор для определенной БД.
+     * @param database - имя БД
+     * @return конектор.
+     * @throws java.util.NoSuchElementException если конектор для такой БД не найден.
      */
-    void asyncOperation(@NonNull Runnable runnable);
-
-
-    /**
-     * Создает контейнер, содержащий объекты типа дженерика.
-     *
-     * @param datastore   - БД.
-     * @param objectClass - тип объекта.
-     * @param idClass     - тип идентификатора объекта.
-     * @return контейнер (DAO).
-     */
-    <T, K> DAO<T, K> asDao(@NonNull Datastore datastore, Class<T> objectClass, Class<K> idClass);
+    SqlConnector sqlConnector(String database);
 }
