@@ -3,6 +3,7 @@ package ru.questcraft.pools;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+import java.util.Iterator;
 import java.util.ServiceLoader;
 
 /**
@@ -18,7 +19,11 @@ public abstract class QuestPools {
         if(instance != null) throw new IllegalStateException("Instance already set.");
 
         ServiceLoader<QuestPools> loader = ServiceLoader.load(QuestPools.class, classLoader);
-        instance = loader.iterator().next();
+        Iterator<QuestPools> iterator = loader.iterator();
+
+        if(!iterator.hasNext()) throw new IllegalStateException("Service providers not found in JAR.");
+
+        instance = iterator.next();
     }
 
     public static QuestPools instance() {
