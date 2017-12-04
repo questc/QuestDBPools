@@ -14,9 +14,14 @@ public abstract class QuestPools {
 
     private static QuestPools instance;
 
-    public static QuestPools instance() {
-        if (instance == null) instance = ServiceLoader.load(QuestPools.class).iterator().next();
+    public static void setInstance(ClassLoader classLoader) {
+        if(instance != null) throw new IllegalStateException("Instance already set.");
 
+        ServiceLoader<QuestPools> loader = ServiceLoader.load(QuestPools.class, classLoader);
+        instance = loader.iterator().next();
+    }
+
+    public static QuestPools instance() {
         return instance;
     }
 
