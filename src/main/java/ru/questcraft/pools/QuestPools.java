@@ -15,6 +15,9 @@ public abstract class QuestPools {
 
     private static QuestPools instance;
 
+    /**
+     * Внутренний метод
+     */
     public static void setInstance(ClassLoader classLoader) {
         if(instance != null) throw new IllegalStateException("Instance already set.");
 
