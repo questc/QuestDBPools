@@ -19,9 +19,8 @@ public class UpdateQuery extends AbstractQuery {
 
     @Override
     public ResultSet execute(Connection connection) throws SQLException {
-        try (PreparedStatement ps = fillObjects(connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS), objects)){
-            ps.executeUpdate();
-            return ps.getGeneratedKeys();
-        }
+        PreparedStatement ps = fillObjects(connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS), objects);
+        ps.executeUpdate();
+        return ps.getGeneratedKeys();
     }
 }
