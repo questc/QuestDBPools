@@ -98,4 +98,11 @@ public abstract class QuestPools {
     public Optional<JedisPool> jedisPool(final int database) {
         return defaultProvider.getJedisPool(database);
     }
+
+    /**
+     * Shuts down all providers of default {@link QuestPoolsProvider}.
+     */
+    public static void shutdown() {
+        defaultProvider.shutdown();
+    }
 }

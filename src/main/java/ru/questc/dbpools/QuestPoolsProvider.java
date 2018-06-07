@@ -62,4 +62,9 @@ public interface QuestPoolsProvider {
      * and there is a valid one for database specified.
      */
     Optional<JedisPool> getJedisPool(int database);
+
+    /**
+     * Shuts down all pools.
+     */
+    default void shutdown() {}
 }
