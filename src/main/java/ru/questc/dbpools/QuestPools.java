@@ -4,64 +4,98 @@ import com.zaxxer.hikari.pool.HikariPool;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
-import lombok.val;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+import java.util.Optional;
+
 /**
- *
+ * Static wrapper for {@link QuestPoolsProvider} providing static proxies for its methods.
  *
  * @author CatCoder
  * @author PROgrm_JARvis
  */
 @Accessors(fluent = true)
+@SuppressWarnings({"unused", "WeakerAccess"})
 public abstract class QuestPools {
 
     /**
-     * Static instance of QuqstPools. Default in most cases
+     * Default {@link QuestPoolsProvider} instance.
      */
-    @Getter private static QuestPools instance;
+    @Getter private static QuestPoolsProvider defaultProvider;
 
     /**
-     * Sets up global (read static) {@code QuestPools}'s instance to be used as default.
+     * Sets up global (read static) {@link QuestPoolsProvider}'s instance to be used as default.
      *
-     * @see #hikariPool()
-     * @see #jedisPool()
+     * @param provider default provider for {@code QuestPools}
      */
-    public static void setupInstance(@NonNull final QuestPools instance) {
-        if (QuestPools.instance == null) QuestPools.instance = instance;
+    public static void setupDefaultProvider(@NonNull final QuestPoolsProvider provider) {
+        if (QuestPools.defaultProvider == null) QuestPools.defaultProvider = provider;
         throw new IllegalStateException("QuestPools already has default instance");
     }
 
     /**
-     * Gets ready-for-use {@link HikariPool} instance to be used for JDBC-related operations.
+     * Retrieves whether Hikari-pools are enabled for default {@code QuestPoolsProvider}.
+     * This guarantees that {@link #hikariPool()} will return non-empty Optional.
      *
-     * @return {@code HikariPool} ready for usage.
+     * @return whether or not Hikari-pools are enabled for default instance.
      */
-    public abstract HikariPool getHikariPool();
-
-    /**
-     *  Gets ready-for-use {@link JedisPool} instance to be used for Redis-related operations.
-     *
-     * @return {@code JedisPool} ready for usage.
-     */
-    public abstract JedisPool getJedisPool();
-
-    /**
-     * Gets ready-for-use {@link HikariPool} of default {@link QuestPools} instance.
-     *
-     * @return default {@code HikariPool} ready for usage.
-     */
-    public static HikariPool hikariPool() {
-        return instance.getHikariPool();
+    public boolean hikariEnabled() {
+        return defaultProvider.isHikariEnabled();
     }
 
     /**
-     * Gets ready-for-use {@link JedisPool} of default {@link QuestPools} instance.
+     * Retrieves whether Jedis-pools are enabled for default {@code QuestPoolsProvider}.
+     * This guarantees that {@link #jedisPool()} will return non-empty Optional.
      *
-     * @return default {@code JedisPool} ready for usage.
+     * @return whether or not Jedis-pools are enabled for default instance.
      */
-    public static JedisPool jedisPool() {
-        return instance.getJedisPool();
+    public boolean jedisEnabled() {
+        return defaultProvider.isJedisEnabled();
+    }
+
+    /**
+     * Gets ready-for-use {@link HikariPool} instance if Hikari-pools are enabled
+     * for default {@code QuestPoolsProvider} to be used for JDBC-related operations.
+     *
+     * @return Optional of for usage {@code HikariPool} present if Hikari-pools are enabled.
+     */
+    public Optional<HikariPool> hikariPool() {
+        return defaultProvider.getHikariPool();
+    }
+
+    /**
+     * Gets specific ready-for-use {@link HikariPool} instance if Hikari-pools are enabled
+     * for default {@code QuestPoolsProvider} and there is a database-specific pool for database specified
+     * to be used for Hikari-related operations.
+     *
+     * @param database database for which to get specific pool.
+     * @return Optional of for usage {@code HikariPool} present if Hikari-pools are enabled are enabled
+     * and there is a valid one for database specified.
+     */
+    public Optional<HikariPool> hikariPool(final String database) {
+        return defaultProvider.getHikariPool(database);
+    }
+
+    /**
+     * Gets ready-for-use {@link JedisPool} instance if Jedis-pools are enabled
+     * for default {@code QuestPoolsProvider} to be used for Redis-related operations.
+     *
+     * @return Optional of for usage {@code JedisPool} present if Jedis-pools are enabled.
+     */
+    public Optional<JedisPool> jedisPool() {
+        return defaultProvider.getJedisPool();
+    }
+
+    /**
+     * Gets specific ready-for-use {@link JedisPool} instance if Jedis-pools are enabled
+     * for default {@code QuestPoolsProvider} and there is a database-specific pool for database specified
+     * to be used for Redis-related operations.
+     *
+     * @param database database for which to get specific pool.
+     * @return Optional of for usage {@code JedisPool} present if Jedis-pools are enabled
+     * and there is a valid one for database specified.
+     */
+    public Optional<JedisPool> jedisPool(final int database) {
+        return defaultProvider.getJedisPool(database);
     }
 }
