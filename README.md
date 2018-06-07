@@ -44,13 +44,11 @@ JedisPool pool = QuestPools.instance().jedisPool();
 Для выполнения запросов нужно авторизовать клиента:
 ```java
 //Получение клиента
-Jedis jedis = pool.getResource();
-//Авторизация
-QuestPools.instance().authenticate(jedis);
-//Выполнение запросов
-jedis.set("key", "meoow");
-jedis.get("key");
-
-//Не забываем закрывать соединение
-jedis.close();
+try(Jedis jedis = pool.getResource()) {
+ //Авторизация
+ QuestPools.instance().authenticate(jedis);
+ //Выполнение запросов
+ jedis.set("key", "meoow");
+ jedis.get("key");   
+}
 ```
