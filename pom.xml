@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ru.questc</groupId>
-    <artifactId>db-pools</artifactId>
+    <artifactId>quest-db-pools</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
