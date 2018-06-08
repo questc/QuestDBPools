@@ -27,10 +27,13 @@ public abstract class QuestPools {
      * Sets up global (read static) {@link QuestPoolsProvider}'s instance to be used as default.
      *
      * @param provider default provider for {@code QuestPools}
+     *
+     * @throws IllegalStateException if default provider is already set
      */
     public static void setupDefaultProvider(@NonNull final QuestPoolsProvider provider) {
-        if (QuestPools.defaultProvider == null) QuestPools.defaultProvider = provider;
-        throw new IllegalStateException("QuestPools already has default instance");
+        if (defaultProvider == null) defaultProvider = provider;
+        else throw new IllegalStateException("QuestPools already has default provider ("
+                .concat(defaultProvider.toString()).concat(")"));
     }
 
     /**
