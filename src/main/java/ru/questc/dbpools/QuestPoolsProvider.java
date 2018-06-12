@@ -1,8 +1,13 @@
 package ru.questc.dbpools;
 
 import com.zaxxer.hikari.pool.HikariPool;
+import lombok.NonNull;
+import lombok.val;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Optional;
 
 /**
@@ -44,6 +49,18 @@ public interface QuestPoolsProvider {
      */
     Optional<HikariPool> getHikariPool(String database);
 
+    default Optional<Connection> getJdbcConnection() throws SQLException {
+        val hikariPool = getHikariPool();
+        if (hikariPool.isPresent()) return Optional.of(hikariPool.get().getConnection());
+        else return Optional.empty();
+    }
+
+    default Optional<Connection> getJdbcConnection(@NonNull final String database) throws SQLException {
+        val hikariPool = getHikariPool(database);
+        if (hikariPool.isPresent()) return Optional.of(hikariPool.get().getConnection());
+        else return Optional.empty();
+    }
+
     /**
      * Gets ready-for-use {@link JedisPool} instance if Jedis-pools are enabled
      * to be used for Redis-related operations.
@@ -62,6 +79,14 @@ public interface QuestPoolsProvider {
      * and there is a valid one for database specified.
      */
     Optional<JedisPool> getJedisPool(int database);
+
+    default Optional<Jedis> getJedis() {
+        return getJedisPool().map(JedisPool::getResource);
+    }
+
+    default Optional<Jedis> getJedis(final int database) {
+        return getJedisPool(database).map(JedisPool::getResource);
+    }
 
     /**
      * Shuts down all pools.

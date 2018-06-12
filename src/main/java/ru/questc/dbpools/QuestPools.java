@@ -4,8 +4,11 @@ import com.zaxxer.hikari.pool.HikariPool;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Optional;
 
 /**
@@ -79,6 +82,14 @@ public abstract class QuestPools {
         return defaultProvider.getHikariPool(database);
     }
 
+    public Optional<Connection> jdbcConnection() throws SQLException {
+        return defaultProvider.getJdbcConnection();
+    }
+
+    public Optional<Connection> jdbcConnection(final String database) throws SQLException {
+        return defaultProvider.getJdbcConnection(database);
+    }
+
     /**
      * Gets ready-for-use {@link JedisPool} instance if Jedis-pools are enabled
      * for default {@code QuestPoolsProvider} to be used for Redis-related operations.
@@ -100,6 +111,14 @@ public abstract class QuestPools {
      */
     public Optional<JedisPool> jedisPool(final int database) {
         return defaultProvider.getJedisPool(database);
+    }
+
+    public Optional<Jedis> redis() {
+        return defaultProvider.getJedis();
+    }
+
+    public Optional<Jedis> redis(final int database) {
+        return defaultProvider.getJedis(database);
     }
 
     /**

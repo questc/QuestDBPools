@@ -1,54 +1,19 @@
 # QuestDBPools
-Работа с базой данных сервера
+###### A simple wrapper for database communications
 
-## Использование
+## Usage
+To use QuestDBPools you can simply access default instance's methods using static methods of `QuestPools` class.
+You can invoke `QuestPools.defaultProvider()` to get this instance.
 
-Данный пул поддерживает работу с Jedis и MySQL.
-
-#### MySQL
-
-Для работы с базой данных, нужно получить конектор:
+In order to work with general JDBC or Redis operations, get instance of `Connection` or `Jedis`:
 ```java
-SqlConnector connector = QuestPools.instance().sqlConnector(имя_БД);
-```
-Выполнение запросов:
-```java
-//Запись данных
-connector.execute(new UpdateQuery("CREATE TABLE IF NOT EXISTS `users` (`name` VARCHAR(16))"), null);
-//Чтение данных
-connector.execute(new SelectQuery("SELECT * FROM `users`"), new QueryListener<ResultSet>() {
-    @Override
-    public void handleResponse(ResultSet response) throws SQLException {
-        while (response.next()){
-            System.out.println(response.getString("name"));
-        }
-    }
 
-   @Override
-    public void handleError(Throwable throwable) {
-        throwable.printStackTrace();
-    }
-});
-```
-Параметризированные запросы:
-```java
-connector.execute(new SelectQuery("SELECT * FROM `users` WHERE name=?", "CatCoder"), обработчик);
-```
-
-#### Redis
-
-Для работы с СУБД Redis нужно получить пул:
-```java
-JedisPool pool = QuestPools.instance().jedisPool();
-```
-Для выполнения запросов нужно авторизовать клиента:
-```java
-//Получение клиента
-try(Jedis jedis = pool.getResource()) {
- //Авторизация
- QuestPools.instance().authenticate(jedis);
- //Выполнение запросов
- jedis.set("key", "meoow");
- jedis.get("key");   
+// JDBC
+try (final Connection connection = QuestPools.jdbcConnection()){
+    // do whatever needed with Connection
+}
+try (final Jedis connection = QuestPools.jedis()){
+    // do whatever needed with Jedis
 }
 ```
+As you can see both of them are `AutoCloseable` and can and __should__ be put in _try-with-resource_ statement.
